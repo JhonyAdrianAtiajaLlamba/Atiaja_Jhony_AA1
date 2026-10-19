@@ -1,4 +1,3 @@
--- Created by GitHub Copilot in SSMS - review carefully before executing
 
 -- 1. Eliminar tablas existentes, respetando las relaciones
 DROP TABLE IF EXISTS dbo.registros_matricula;
