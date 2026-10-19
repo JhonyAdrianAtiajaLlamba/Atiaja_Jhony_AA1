@@ -5,7 +5,7 @@ DROP TABLE IF EXISTS dbo.asignaturas;
 DROP TABLE IF EXISTS dbo.estudiantes;
 
 -- 2. Crear tablas
-CREATE TABLE dbo.estudiantes (
+CREATE TABLE dbo.estudiantes ( --Apartado para crear la tabla de estudiantes
     estudiante_id INT IDENTITY(1,1) NOT NULL
         CONSTRAINT PK_estudiantes PRIMARY KEY,
     nombre        VARCHAR(120) NOT NULL,
@@ -14,7 +14,7 @@ CREATE TABLE dbo.estudiantes (
     facultad      VARCHAR(120) NOT NULL
 );
 
-CREATE TABLE dbo.asignaturas (
+CREATE TABLE dbo.asignaturas ( --Apartado para crear la tabla de asignaturas
     asignatura_id     INT IDENTITY(1,1) NOT NULL
         CONSTRAINT PK_asignaturas PRIMARY KEY,
     nombre_materia    VARCHAR(120) NOT NULL
@@ -25,7 +25,7 @@ CREATE TABLE dbo.asignaturas (
         CHECK (cupos_disponibles >= 0)
 );
 
-CREATE TABLE dbo.registros_matricula (
+CREATE TABLE dbo.registros_matricula ( --Apartado para crear la tabla de registros de matricula
     registro_id    INT IDENTITY(1,1) NOT NULL
         CONSTRAINT PK_registros_matricula PRIMARY KEY,
     estudiante_id INT NOT NULL,
@@ -50,7 +50,7 @@ CREATE TABLE dbo.registros_matricula (
 );
 
 -- 3. Cargar datos de ejemplo
-INSERT INTO dbo.estudiantes (nombre, cedula, facultad)
+INSERT INTO dbo.estudiantes (nombre, cedula, facultad) --Apartado para insertar datos de ejemplo en la tabla de estudiantes
 VALUES
     ('Ana Torres', '0102030405', 'Ingeniería'),
     ('Luis Mendoza', '1102030406', 'Ciencias Administrativas');
@@ -63,7 +63,7 @@ VALUES
     ('Sistemas Operativos', 'Msc. Elena Viteri', 5);
 
 -- 4. Transacción A: matricular y descontar un cupo de forma atómica
-BEGIN TRY
+BEGIN TRY --registro de matricula para el estudiante 1 en la asignatura 1
     BEGIN TRANSACTION;
 
     UPDATE dbo.asignaturas
@@ -100,7 +100,7 @@ WHERE asignatura_id = 1;
 -- 5. Transacción B: demostrar que ROLLBACK deshace la inserción
 BEGIN TRANSACTION;
 
-INSERT INTO dbo.registros_matricula
+INSERT INTO dbo.registros_matricula -- Apartado para insertar un registro de matrícula en la tabla de registros
     (estudiante_id, asignatura_id, estado)
 VALUES
     (2, 1, 'PENDIENTE');
@@ -139,8 +139,8 @@ BEGIN CATCH
 END CATCH;
 
 -- Comprobar los cupos después del ROLLBACK
-SELECT asignatura_id, nombre_materia, cupos_disponibles
-FROM dbo.asignaturas
+SELECT asignatura_id, nombre_materia, cupos_disponibles -- Apartado para seleccionar los cupos disponibles de las asignaturas
+FROM dbo.asignaturas 
 ORDER BY asignatura_id;
 
 -- 7. Patrón de matrícula concurrente: confirmar solo si hay cupo
@@ -169,9 +169,9 @@ BEGIN CATCH
     THROW;
 END CATCH;
 
--- 8. Verificación final
+-- 8. Verificación final con los registros de matrícula y los cupos disponibles
 SELECT
-    r.registro_id,
+    r.registro_id, -- Apartado para seleccionar los registros de matrícula junto con los nombres de los estudiantes y las asignaturas
     e.nombre AS estudiante,
     a.nombre_materia,
     r.fecha_registro,
@@ -183,3 +183,4 @@ INNER JOIN dbo.estudiantes AS e
 INNER JOIN dbo.asignaturas AS a
     ON a.asignatura_id = r.asignatura_id
 ORDER BY r.registro_id;
+--todo el código ha sido creado usando los lineamientos solicitados en el enunciado de la actividad autonoma 1
